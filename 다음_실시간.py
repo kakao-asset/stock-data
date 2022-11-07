@@ -1,7 +1,5 @@
-import time
-
 import requests, time
-from bs4 import BeautifulSoup as bs
+from fake_useragent import UserAgent
 
 codes = ["376180",
 "373200",
@@ -103,9 +101,10 @@ codes = ["376180",
 "009190",
 "014285"]
 url_origin = "https://finance.daum.net/api/quotes/A"
+user_agent = UserAgent()
 headers = {
     'Referer': 'http://finance.daum.net/',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127'
+    'User-Agent': user_agent.random
 }
 
 while True:

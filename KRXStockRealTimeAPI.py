@@ -49,8 +49,8 @@ def matgraph(i, code):
     stock_from = (datetime.today() - timedelta(days=1)).strftime('%Y%m%d')
     stock_to = datetime.today().strftime('%Y%m%d')
 
-    df, stock_name = stock_stock(code, stock_from, stock_from)
-    # df, stock_name = stock_stock(code, stock_to, stock_to)
+    # df, stock_name = stock_stock(code, stock_from, stock_from)
+    df, stock_name = stock_stock(code, stock_to, stock_to)
 
     # 금일 데이터
     if df['Open'][-1] < df['Close'][-1]:
@@ -58,20 +58,12 @@ def matgraph(i, code):
     else:
         print(12, stock_name, df['Open'][-1], df['Close'][-1])
 
-    if df['Open'][-1] < df['Close'][-1]:
-        print(21, stock_name, df['Low'][-1], df['High'][-1])
-    else:
-        if df['Open'][-1] > df['Close'][-1]:
-            print(22, stock_name, df['Low'][-1], df['High'][-1])
-        else:
-            print(23, stock_name, df['Low'][-1], df['High'][-1])
-            print(24, stock_name, df['Close'][-1])
 
-# while True:
-i=0
-codes = ['005930','000660','005935','035420','207940']
-for code in codes:
-    i+=1
-    matgraph(i,code)
-time.sleep(5)
-print()
+while True:
+    i=0
+    codes = ['035420','035720'] * 10
+    for code in codes:
+        i+=1
+        matgraph(i,code)
+    time.sleep(5)
+    print()

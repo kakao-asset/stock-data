@@ -1,5 +1,5 @@
+from json import JSONDecodeError
 import requests, time, json
-
 custom_header = {
     'referer': 'https://finance.daum.net/api/sectors/?includedStockLimit=2&page=1&perPage=30&fieldName=changeRate&order=desc&market=KOSPI&change=RISE&includeStocks=true&pagination=true',
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36'}
@@ -37,7 +37,12 @@ while True:
         response = requests.get(url_origin+code, headers=headers)
         #print(response)
         # jsonObj = response.json()
-        jsonObj = json.loads(response.text)
+        try:
+            jsonObj = json.loads(response.text)
+        except JSONDecodeError:
+            print(response.text)
+
+
         # bid 매도 # ask 매수
         #print(jsonObj['askPrice'],jsonObj['bidPrice'])
         #print(jsonObj['tradePrice'])

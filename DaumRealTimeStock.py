@@ -33,6 +33,7 @@ headers = {
 
 while True:
     #url = "https://finance.daum.net/api/quotes/A035720?summary=false&changeStatistics=true"
+    start = time.time()
     for code in codes:
         response = requests.get(url_origin+code, headers=headers)
         #print(response)
@@ -48,6 +49,8 @@ while True:
         #print(jsonObj['tradePrice'])
         #
         #print(jsonObj['accTradeVolume'])
-        print(jsonObj)
+
+        #print(jsonObj)
         # print('------')
+    print(f"{time.time() - start:.4f} sec")
     time.sleep(1)

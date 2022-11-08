@@ -33,7 +33,7 @@ for theme in stock_data['data']:
     req = requests.get(theme_uri, headers=custom_header)
     stock_data = json.loads(req.text)
     for detail in stock_data['includedStocks']:
-        print(detail)
+        print("name="+str(detail['name'])+', '+"symbolCode="+str(detail['symbolCode'])+', '+"tradePrice="+str(detail['tradePrice'])+', '+"change="+str(detail['change'])+', '+"changePrice="+str(detail['changePrice'])+', '+"changeRate="+str(detail['changeRate'])+', '+"accTradeVolume="+str(detail['accTradeVolume'])+', '+"accTradePrice="+str(detail['accTradePrice'])+', '+"marketCap="+str(detail['marketCap'])+', '+"foreignRatio="+str(detail['foreignRatio']))
         result.append(detail['name'])
     print()
 
@@ -52,7 +52,7 @@ for theme in stock_data['data']:
     req = requests.get(theme_uri, headers=custom_header)
     stock_data = json.loads(req.text)
     for detail in stock_data['includedStocks']:
-        print(detail)
+        print("name="+str(detail['name'])+', '+"symbolCode="+str(detail['symbolCode'])+', '+"tradePrice="+str(detail['tradePrice'])+', '+"change="+str(detail['change'])+', '+"changePrice="+str(detail['changePrice'])+', '+"changeRate="+str(detail['changeRate'])+', '+"accTradeVolume="+str(detail['accTradeVolume'])+', '+"accTradePrice="+str(detail['accTradePrice'])+', '+"marketCap="+str(detail['marketCap'])+', '+"foreignRatio="+str(detail['foreignRatio']))
         result.append(detail['name'])
     print()
 

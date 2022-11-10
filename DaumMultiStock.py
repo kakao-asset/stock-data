@@ -38,7 +38,8 @@ def work(codes) :
 
     headers = {
         'Referer': 'http://finance.daum.net',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127',
+        'Connection': 'close'
     }
 
     #url = "https://finance.daum.net/api/quotes/A035720?summary=false&changeStatistics=true"
@@ -67,15 +68,26 @@ def work(codes) :
 if __name__ == "__main__":
     codes = loadCode()
     #result = Queue()
-    p = Pool(8)
-    ret1 = p.apply_async(work, (codes[:len(codes)//8],))
-    ret2 = p.apply_async(work, (codes[len(codes)//8:(len(codes)//8)*2],))
-    ret3 = p.apply_async(work, (codes[(len(codes)//8)*2:(len(codes)//8)*3],))
-    ret4 = p.apply_async(work, (codes[(len(codes)//8)*3:(len(codes)//8)*4],))
-    ret5 = p.apply_async(work, (codes[(len(codes)//8)*4:(len(codes)//8)*5],))
-    ret6 = p.apply_async(work, (codes[(len(codes)//8)*5:(len(codes)//8)*6],))
-    ret7 = p.apply_async(work, (codes[(len(codes)//8)*6:(len(codes)//8)*7],))
-    ret8 = p.apply_async(work, (codes[(len(codes)//8)*7:],))
+
+    p = Pool(24)
+    # ret1 = p.apply_async(work, (codes[:len(codes)//16],))
+    for i in range(24):
+        p.apply_async(work, (codes[(len(codes)//24)*i:(len(codes)//24)*(i+1)],))
+    # ret2 = p.apply_async(work, (codes[len(codes)//16:(len(codes)//16)*2],))
+    # ret3 = p.apply_async(work, (codes[(len(codes)//16)*2:(len(codes)//16)*3],))
+    # ret4 = p.apply_async(work, (codes[(len(codes)//16)*3:(len(codes)//16)*4],))
+    # ret5 = p.apply_async(work, (codes[(len(codes)//16)*4:(len(codes)//16)*5],))
+    # ret6 = p.apply_async(work, (codes[(len(codes)//16)*5:(len(codes)//16)*6],))
+    # ret7 = p.apply_async(work, (codes[(len(codes)//16)*6:(len(codes)//16)*7],))
+    # ret8 = p.apply_async(work, (codes[(len(codes)//16)*7:(len(codes)//16)*8],))
+    # ret9 = p.apply_async(work, (codes[(len(codes)//16)*8:(len(codes)//16)*9],))
+    # ret10 = p.apply_async(work, (codes[(len(codes)//16)*9:(len(codes)//16)*10],))
+    # ret11 = p.apply_async(work, (codes[(len(codes)//16)*10:(len(codes)//16)*11],))
+    # ret12 = p.apply_async(work, (codes[(len(codes)//16)*11:(len(codes)//16)*12],))
+    # ret13 = p.apply_async(work, (codes[(len(codes)//16)*12:(len(codes)//16)*13],))
+    # ret14 = p.apply_async(work, (codes[(len(codes)//16)*13:(len(codes)//16)*14],))
+    # ret15 = p.apply_async(work, (codes[(len(codes)//16)*14:(len(codes)//16)*15],))
+    # ret16 = p.apply_async(work, (codes[(len(codes)//16)*15:],))
 
     p.close()
     p.join()

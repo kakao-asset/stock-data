@@ -43,7 +43,7 @@ def work(codes) :
             jsonObj = json.loads(response.text)
         except JSONDecodeError:
             print(response.text)
-        es.index(index=stockIndex, body={'symbolCode': jsonObj['symbolCode'], 'name': jsonObj['name'], 'tradePrice': jsonObj['tradePrice']})
+        #es.index(index=stockIndex, body={'symbolCode': jsonObj['symbolCode'], 'name': jsonObj['name'], 'tradePrice': jsonObj['tradePrice']})
         # print(jsonObj)
     print(f"{time.time() - start:.4f} sec")
 

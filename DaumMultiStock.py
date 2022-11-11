@@ -4,9 +4,11 @@ from multiprocessing import Pool
 import requests, time, json, schedule
 from elasticsearch import Elasticsearch
 
-es = Elasticsearch('http://192.168.0.34:9200/')
+remote = 'http://192.168.0.34:9200/'
+local = 'http://localhost:9200'
+es = Elasticsearch(local)
 
-stockIndex = "stock-data-test"
+stockIndex = "stock-data"
 
 headers = {
             'Referer': 'http://finance.daum.net',
@@ -44,13 +46,57 @@ def work(codes) :
             jsonObj = json.loads(response.text)
         except JSONDecodeError:
             print(response.text)
-        es.index(index=stockIndex, body={'symbolCode': jsonObj['symbolCode'], 'name': jsonObj['name'], 'tradePrice': str(jsonObj['tradePrice']), "@timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z', "datetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-2]})
+        es.index(index=stockIndex, body={
+            'accTradePrice': jsonObj['accTradePrice'],
+            'accTradeVolume': jsonObj['accTradeVolume'],
+            'bps': jsonObj['bps'],
+            'change': jsonObj['change'],
+            'changePrice': jsonObj['changePrice'],
+            'changeRate': jsonObj['changeRate'],
+            'dps': jsonObj['dps'],
+            'eps': jsonObj['eps'],
+            'foreignOwnShares': jsonObj['foreignOwnShares'],
+            'foreignRatio': jsonObj['foreignRatio'],
+            'high50dPrice': jsonObj['high50dPrice'],
+            'high52wDate': jsonObj['high52wDate'],
+            'high52wPrice': jsonObj['high52wPrice'],
+            'highInYearPrice': jsonObj['highInYearPrice'],
+            'highPrice': jsonObj['highPrice'],
+            'listedShareCount': jsonObj['listedShareCount'],
+            'listingDate': jsonObj['listingDate'],
+            'low50dPrice': jsonObj['low50dPrice'],
+            'low52wDate': jsonObj['low52wDate'],
+            'low52wPrice': jsonObj['low52wPrice'],
+            'lowInYearPrice': jsonObj['lowInYearPrice'],
+            'lowPrice': jsonObj['lowPrice'],
+            'lowerLimitPrice': jsonObj['lowerLimitPrice'],
+            'market': jsonObj['market'],
+            'marketCap': jsonObj['marketCap'],
+            'marketCapRank': jsonObj['marketCapRank'],
+            'name': jsonObj['name'],
+            'netIncome': jsonObj['netIncome'],
+            'openingPrice': jsonObj['openingPrice'],
+            'operatingProfit': jsonObj['operatingProfit'],
+            'pbr': jsonObj['pbr'],
+            'per': jsonObj['per'],
+            'prevAccTradeVolume': jsonObj['prevAccTradeVolume'],
+            'prevAccTradeVolumeChangeRate': jsonObj['prevAccTradeVolumeChangeRate'],
+            'prevClosingPrice': jsonObj['prevClosingPrice'],
+            'sales': jsonObj['sales'],
+            'sectorCode': jsonObj['sectorCode'],
+            'sectorName': jsonObj['sectorName'],
+            'symbolCode': jsonObj['symbolCode'],
+            'upperLimitPrice': jsonObj['upperLimitPrice'],
+            'tradePrice': jsonObj['tradePrice'],
+            "@timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z',
+            "datetime": datetime.now().strftime('%Y-%m-%d%H:%M:%S')
+        })
         # print(jsonObj)
     print(f"{time.time() - start:.4f} sec")
 
 
 def work_schedule(codes) :
-    schedule.every(10).seconds.do(work,codes)
+    schedule.every(1).minutes.do(work,codes)
     while True:
         schedule.run_pending()
         time.sleep(1)

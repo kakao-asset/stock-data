@@ -6,9 +6,9 @@ from elasticsearch import Elasticsearch
 
 remote = 'http://192.168.0.34:9200/'
 local = 'http://localhost:9200'
-es = Elasticsearch(local)
+es = Elasticsearch(remote)
 
-stockIndex = "stock-data"
+stockIndex = "stock-data-test"
 
 headers = {
             'Referer': 'http://finance.daum.net',
@@ -96,19 +96,17 @@ def work(codes) :
 
 
 def work_schedule(codes) :
-    schedule.every(1).minutes.do(work,codes)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    for i in range(count):
+        p.apply_async(work, (codes[(len(codes) // count) * i:(len(codes) // count) * (i + 1)],))
 
 if __name__ == "__main__":
     codes = loadCode()
-
     count = 24
     p = Pool(count)
-    for i in range(count):
-        p.apply_async(work_schedule, (codes[(len(codes)//count)*i:(len(codes)//count)*(i+1)],))
-
+    schedule.every(1).minutes.do(work_schedule, codes)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
     p.close()
     p.join()
     # print(datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z')

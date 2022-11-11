@@ -1,11 +1,12 @@
+from datetime import datetime
 from json import JSONDecodeError
 from multiprocessing import Pool
 import requests, time, json, schedule
 from elasticsearch import Elasticsearch
 
-es = Elasticsearch('http://192.168.56.123:9200/')
+es = Elasticsearch('http://192.168.0.34:9200/')
 
-stockIndex = "stock-data"
+stockIndex = "stock-data-test"
 
 headers = {
             'Referer': 'http://finance.daum.net',
@@ -43,13 +44,13 @@ def work(codes) :
             jsonObj = json.loads(response.text)
         except JSONDecodeError:
             print(response.text)
-        #es.index(index=stockIndex, body={'symbolCode': jsonObj['symbolCode'], 'name': jsonObj['name'], 'tradePrice': jsonObj['tradePrice']})
+        es.index(index=stockIndex, body={'symbolCode': jsonObj['symbolCode'], 'name': jsonObj['name'], 'tradePrice': str(jsonObj['tradePrice']), "@timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z', "datetime": datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-2]})
         # print(jsonObj)
     print(f"{time.time() - start:.4f} sec")
 
 
 def work_schedule(codes) :
-    schedule.every(1).minutes.do(work,codes)
+    schedule.every(10).seconds.do(work,codes)
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -64,5 +65,6 @@ if __name__ == "__main__":
 
     p.close()
     p.join()
-
+    # print(datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z')
+    # print(datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-2])
 

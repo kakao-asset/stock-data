@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 
 remote = 'http://192.168.0.34:9200/'
 local = 'http://localhost:9200'
-es = Elasticsearch(remote)
+es = Elasticsearch(local)
 
 stockIndex = "stock-data-test"
 

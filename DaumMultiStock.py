@@ -36,7 +36,7 @@ def loadCode() :
 
     return list(codes)
 
-def work(codes) :
+def work(codes, timestamp, insertdatetime) :
     print("started")
     url_origin = "https://finance.daum.net/api/quotes/"
     start = time.time()
@@ -88,27 +88,30 @@ def work(codes) :
             'symbolCode': jsonObj['symbolCode'],
             'upperLimitPrice': jsonObj['upperLimitPrice'],
             'tradePrice': jsonObj['tradePrice'],
-            "@timestamp": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z',
-            "datetime": datetime.now().strftime('%Y-%m-%d%H:%M:%S')
+            "@timestamp": timestamp,
+            "datetime": insertdatetime
         })
         # print(jsonObj)
     print(f"{time.time() - start:.4f} sec")
 
 
 def work_schedule(codes) :
+    timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+    insertdatetime = datetime.now().strftime('%Y-%m-%d%H:%M:%S')
     for i in range(count):
-        p.apply_async(work, (codes[(len(codes) // count) * i:(len(codes) // count) * (i + 1)],))
+        p.apply_async(work, (codes[(len(codes) // count) * i:(len(codes) // count) * (i + 1)],timestamp, insertdatetime))
 
 if __name__ == "__main__":
     codes = loadCode()
     count = 24
     p = Pool(count)
+
+    work_schedule(codes)
+
     schedule.every(1).minutes.do(work_schedule, codes)
     while True:
         schedule.run_pending()
         time.sleep(1)
     p.close()
     p.join()
-    # print(datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z')
-    # print(datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-2])
 

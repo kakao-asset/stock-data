@@ -21,6 +21,13 @@ headers = {
 
 url = "https://finance.daum.net/api/search/ranks?limit=10"
 
+def make_index(es_inst, index):
+    if es_inst.indices.exists(index=index):
+        es_inst.indices.delete(index=index)
+
+make_index(es, stockIndex)
+
+
 def work_schedule() :
     response = req.urlopen(req.Request(url, headers=headers)).read().decode('UTF-8')
     rank_json = json.loads(response)['data']
@@ -28,7 +35,7 @@ def work_schedule() :
     if es.indices.exists(index=stockIndex):
         es.indices.delete(index=stockIndex)
     for elm in rank_json:
-        es.index(index=stockIndex, body={'rank': elm['rank'], 'name': elm['name']})
+        es.index(index=stockIndex, body={'rank': elm['rank'], 'name': elm['name'], 'symbolCode': elm['symbolCode']})
 
 if __name__ == "__main__":
     work_schedule()

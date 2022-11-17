@@ -3,20 +3,30 @@ from json import JSONDecodeError
 from multiprocessing import Pool
 import requests, time, json, schedule
 from elasticsearch import Elasticsearch
+from fake_useragent import UserAgent
 
+user_agent = UserAgent()
 remote = 'http://192.168.0.34:9200/'
 local = 'http://localhost:9200'
 es = Elasticsearch(local)
 
-stockIndex = "stock-data-test"
+stockIndex = "stock-data"
 
 headers = {
             'Referer': 'http://finance.daum.net',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127',
-            'Connection': 'close'
+            'Connection': 'close',
+            'User-Agent': user_agent.random
 }
 
 t = time.localtime()
+
+def make_index(es_inst, index):
+    if es_inst.indices.exists(index=index):
+        es_inst.indices.delete(index=index)
+
+make_index(es, stockIndex)
+
 def loadCode() :
     codes = set()
     # 코스피
@@ -27,12 +37,11 @@ def loadCode() :
     for i in stock_data['data']:
         codes.add(i['symbolCode'])
 
-    KOSDAQ = "https://finance.daum.net/api/quotes/stocks?market=KOSDAQ"
-    req = requests.get(KOSDAQ, headers=headers)
-    stock_data = json.loads(req.text)
-    for i in stock_data['data']:
-        codes.add(i['symbolCode'])
-
+    # KOSDAQ = "https://finance.daum.net/api/quotes/stocks?market=KOSDAQ"
+    # req = requests.get(KOSDAQ, headers=headers)
+    # stock_data = json.loads(req.text)
+    # for i in stock_data['data']:
+    #     codes.add(i['symbolCode'])
 
     return list(codes)
 
@@ -97,7 +106,7 @@ def work(codes, timestamp, insertdatetime) :
 
 def work_schedule(codes) :
     timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
-    insertdatetime = datetime.now().strftime('%Y-%m-%d%H:%M:%S')
+    insertdatetime = datetime.now().strftime('%Y-%m-%d %H:%M     ')
     for i in range(count):
         p.apply_async(work, (codes[(len(codes) // count) * i:(len(codes) // count) * (i + 1)],timestamp, insertdatetime))
 
@@ -105,6 +114,8 @@ if __name__ == "__main__":
     codes = loadCode()
     count = 24
     p = Pool(count)
+
+    time.sleep(3)
 
     work_schedule(codes)
 

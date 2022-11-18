@@ -1,16 +1,18 @@
 from datetime import datetime
 from json import JSONDecodeError
 from multiprocessing import Pool
-import requests, time, json, schedule, os
+import requests, time, json, schedule
 from fake_useragent import UserAgent
 
 user_agent = UserAgent()
 esHeaders = {"Content-Type": "application/json; charset=UTF-8"}
 
-serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['INDEX']
-codeListIndex = os.environ['STOCK-CODE-INDEX']
+serverIP = 'http://192.168.0.34:9200'
+# serverIP = os.environ['SERVER_IP']
+# stockIndex = os.environ['INDEX']
 
+stockIndex = "multi-test-yr6-api"
+codeListIndex = 'list-data-test'
 headers = {
             'Referer': 'http://finance.daum.net',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127',
@@ -26,13 +28,15 @@ def make_index():
 def loadCode() :
     codes = set()
     # 코스피
-    KOSPI = "https://finance.daum.net/api/quotes/stocks?market=KOSPI"
+    #KOSPI = "https://finance.daum.net/api/quotes/stocks?market=KOSPI"
 
-    req = requests.get(KOSPI, headers=headers)
-    stock_data = json.loads(req.text)
-    for i in stock_data['data']:
-        print(i['symbolCode'])
-        codes.add(i['symbolCode'])
+    req = requests.get(serverIP+"/"+codeListIndex+"/_search?size=2000")
+    res = json.loads(req.text)
+    stockList = res['hits']['hits']
+
+    for list in stockList:
+        print(list['_source']['symbolCode'])
+        codes.add(list['_source']['symbolCode'])
 
     return list(codes)
 

@@ -30,7 +30,6 @@ def loadCode() :
     req = requests.get(KOSPI, headers=headers)
     stock_data = json.loads(req.text)
     for i in stock_data['data']:
-        print(i['symbolCode'])
         codes.add(i['symbolCode'])
 
     return list(codes)
@@ -70,7 +69,7 @@ def work_schedule(codes) :
         p.apply_async(work, (codes[(len(codes) // count) * i:(len(codes) // count) * (i + 1)],timestamp, insertdatetime))
 
 def exit():
-    print("exit process")
+    print("MultiStock exit process")
     sys.exit()
 
 if __name__ == "__main__":
@@ -85,7 +84,7 @@ if __name__ == "__main__":
     work_schedule(codes)
 
     schedule.every(1).minutes.do(work_schedule, codes)
-    schedule.every().day.at("11:15").do(exit)
+    schedule.every().day.at("11:24").do(exit)
     while True:
         schedule.run_pending()
         time.sleep(1)

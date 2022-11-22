@@ -1,4 +1,5 @@
 import json
+import sys
 import urllib.request as req
 import time
 import os
@@ -35,10 +36,15 @@ def work_schedule() :
         es.indices.delete(index=stockIndex)
     for elm in rank_json:
         es.index(index=stockIndex, body={'rank': elm['rank'], 'name': elm['name'], 'symbolCode': elm['symbolCode']})
-        
+
+def exit():
+    print("StockRank exit process")
+    sys.exit()
+
 if __name__ == "__main__":
     work_schedule()
     schedule.every(1).hours.do(work_schedule)
+    schedule.every().day.at("11:24").do(exit)
     while True:
         schedule.run_pending()
         time.sleep(1)

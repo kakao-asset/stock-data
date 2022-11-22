@@ -45,7 +45,8 @@ def work(codes, timestamp, insertdatetime) :
         try:
             jsonObj = json.loads(response.text)
         except JSONDecodeError:
-
+            print("Json Decode Error")
+            
         if jsonObj['sectorCode'] is None:
             sectorCode = 'None'
         else:

@@ -9,7 +9,6 @@ esHeaders = {"Content-Type": "application/json; charset=UTF-8"}
 
 serverIP = os.environ['SERVER_IP']
 stockIndex = os.environ['INDEX']
-codeListIndex = os.environ['STOCK-CODE-INDEX']
 
 headers = {
             'Referer': 'http://finance.daum.net',
@@ -46,8 +45,6 @@ def work(codes, timestamp, insertdatetime) :
         try:
             jsonObj = json.loads(response.text)
         except JSONDecodeError:
-            print(response.text)
-        #data = '{\"accTradePrice\": \"' + jsonObj['accTradePrice'] + '\", \"accTradeVolume\": \"' + jsonObj['accTradeVolume'] + '\", \"bps\": \"' + jsonObj['bps'] + '\", \"change\": \"' + jsonObj['change'] + '\", \"changePrice\": \"' + jsonObj['changePrice'] + '\", \"changeRate\": \"' + jsonObj['changeRate'] +'\", \"dps\": \"' + jsonObj['dps'] +'\", \"eps\": \"' + jsonObj['eps'] +'\", \"foreignOwnShares\": \"' + jsonObj['foreignOwnShares'] +'\", \"foreignRatio\": \"' + jsonObj['foreignRatio'] +'\", \"high50dPrice\": \"' + jsonObj['high50dPrice'] +'\", \"high52wDate\": \"' + jsonObj['high52wDate'] +'\", \"high52wPrice\": \"' + jsonObj['high52wPrice'] +'\", \"highInYearPrice\": \"' + jsonObj['highInYearPrice'] +'\", \"highPrice\": \"' + jsonObj['highPrice'] + '\", \"listedShareCount\": \"' + jsonObj['listedShareCount'] +'\", \"listingDate+\": \"' +  jsonObj['listingDate'] + '\", \"low50dPrice+\": \"' +  jsonObj['low50dPrice'] + '\", \"low52wDate+\": \"' +  jsonObj['low52wDate'] +'\", \"low52wPrice+\": \"' +  jsonObj['low52wPrice'] + '\", \"lowInYearPrice+\": \"' +  jsonObj['lowInYearPrice'] +'\", \"lowPrice+\": \"' +  jsonObj['lowPrice'] +'\", \"lowerLimitPrice+\": \"' +  jsonObj['lowerLimitPrice'] +'\", \"market+\": \"' +  jsonObj['market'] +'\", \"marketCap+\": \"' +  jsonObj['marketCap'] +'\", \"marketCapRank+\": \"' +  jsonObj['marketCapRank'] +'\", \"name+\": \"' +  jsonObj['name'] +'\", \"netIncome+\": \"' +  jsonObj['netIncome'] + '\", \"openingPrice+\": \"' + jsonObj['openingPrice'] + '\", \"operatingProfit\": \"' + jsonObj['operatingProfit']+ '\", \"pbr\": \"' + jsonObj['pbr'] + '\", \"per\": \"' + jsonObj['per'] + '\", \"prevAccTradeVolume\": \"' + jsonObj['prevAccTradeVolume'] + '\", \"prevAccTradeVolumeChangeRate\": \"' + jsonObj['prevAccTradeVolumeChangeRate'] + '\", \"prevClosingPrice\": \"' + jsonObj['prevClosingPrice'] + '\", \"sales\": \"' + jsonObj['sales'] + '\", \"sectorCode\": \"' + jsonObj['sectorCode'] + '\", \"sectorName\": \"' + jsonObj['sectorName'] + '\", \"symbolCode\": \"' + jsonObj['symbolCode'] + '\", \"upperLimitPrice\": \"' + jsonObj['upperLimitPrice'] + '\", \"tradePrice\": \"' + jsonObj['tradePrice'] + '\", \"@timestamp\": \"' + timestamp + '\", \"datetime\": \"' + insertdatetime + '\"}'
 
         if jsonObj['sectorCode'] is None:
             sectorCode = 'None'

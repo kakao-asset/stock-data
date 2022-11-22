@@ -1,7 +1,7 @@
 from datetime import datetime
 from json import JSONDecodeError
 from multiprocessing import Pool
-import requests, time, json, schedule, os
+import requests, time, json, schedule, os, sys
 from fake_useragent import UserAgent
 
 user_agent = UserAgent()
@@ -69,6 +69,10 @@ def work_schedule(codes) :
     for i in range(count):
         p.apply_async(work, (codes[(len(codes) // count) * i:(len(codes) // count) * (i + 1)],timestamp, insertdatetime))
 
+def exit():
+    print("exit process")
+    sys.exit()
+
 if __name__ == "__main__":
 
     make_index()
@@ -81,6 +85,7 @@ if __name__ == "__main__":
     work_schedule(codes)
 
     schedule.every(1).minutes.do(work_schedule, codes)
+    schedule.every().day.at("11:15").do(exit)
     while True:
         schedule.run_pending()
         time.sleep(1)

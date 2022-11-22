@@ -11,7 +11,7 @@ stockIndex = os.environ['INDEX']
 
 es = Elasticsearch(serverIP)
 
-ua = UserAgent()
+ua = UserAgent(verify_ssl=False)
 
 headers = {
     'User-agent': ua.ie,

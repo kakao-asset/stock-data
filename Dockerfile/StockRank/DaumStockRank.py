@@ -39,9 +39,11 @@ def work_schedule() :
 
 def exit():
     print("StockRank exit process")
+    print("Stock Rank end!!!")
     sys.exit()
 
 if __name__ == "__main__":
+    print("Stock Rank start!!!")
     work_schedule()
     schedule.every(1).hours.do(work_schedule)
     schedule.every().day.at("11:24").do(exit)

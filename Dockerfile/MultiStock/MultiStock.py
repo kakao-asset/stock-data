@@ -70,10 +70,11 @@ def work_schedule(codes) :
 
 def exit():
     print("MultiStock exit process")
+    print("Multi Stock end!!!")
     sys.exit()
 
 if __name__ == "__main__":
-
+    print("Multi Stock start!!!")
     make_index()
     codes = loadCode()
     count = 24

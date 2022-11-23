@@ -27,5 +27,7 @@ def loadCode():
         requests.post(serverIP+"/"+stockIndex+"/1",headers=esHeaders, data=data.encode('utf-8'))
 
 if __name__ == "__main__":
+    print("Stock List start!!!")
     make_index()
     loadCode()
+    print("Stock List end!!!")

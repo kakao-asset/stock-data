@@ -13,11 +13,9 @@ stockIndex = os.environ['INDEX']
 headers = {
             'Referer': 'http://finance.daum.net',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127',
-            'Connection': 'close',
-            'User-Agent': user_agent.random
+            'Connection': 'close'
 }
 
-t = time.localtime()
 def make_index():
     requests.delete(serverIP+"/"+ stockIndex)
     requests.put(serverIP+"/"+ stockIndex)
@@ -35,7 +33,6 @@ def loadCode() :
     return list(codes)
 
 def work(codes, timestamp, insertdatetime) :
-    print("started")
     url_origin = "https://finance.daum.net/api/quotes/"
 
     start = time.time()
@@ -45,7 +42,7 @@ def work(codes, timestamp, insertdatetime) :
             jsonObj = json.loads(response.text)
         except JSONDecodeError:
             print("Json Decode Error")
-            
+
         if jsonObj['sectorCode'] is None:
             sectorCode = 'None'
         else:
@@ -59,8 +56,6 @@ def work(codes, timestamp, insertdatetime) :
         data = '{\"accTradePrice\": \"' + str(jsonObj['accTradePrice']) + '\", \"sectorName\": \"' + sectorName + '\", \"sectorCode\": \"' + sectorCode + '\", \"symbolCode\": \"' + str(jsonObj['symbolCode']) + '\", \"accTradeVolume\": \"' + str(jsonObj['accTradeVolume']) + '\", \"bps\": \"' + str(jsonObj['bps']) + '\", \"change\": \"' + jsonObj['change'] + '\", \"dps\": \"' + str(jsonObj['dps']) + '\", \"eps\": \"' + str(jsonObj['eps']) + '\", \"foreignRatio\": \"' + str(jsonObj['foreignRatio']) + '\", \"high52wPrice\": \"' + str(jsonObj['high52wPrice']) + '\", \"highPrice\": \"' + str(jsonObj['highPrice']) + '\", \"low52wPrice+\": \"' + str(jsonObj['low52wPrice']) + '\", \"lowPrice+\": \"' + str(jsonObj['lowPrice']) + '\", \"lowerLimitPrice+\": \"' + str(jsonObj['lowerLimitPrice']) + '\", \"marketCap+\": \"' + str(jsonObj['marketCap']) + '\", \"name+\": \"' + str(jsonObj['name']) + '\", \"openingPrice+\": \"' + str(jsonObj['openingPrice']) + '\", \"pbr\": \"' + str(jsonObj['pbr']) + '\", \"per\": \"' + str(jsonObj['per']) + '\", \"prevClosingPrice\": \"' + str(jsonObj['prevClosingPrice']) + '\", \"upperLimitPrice\": \"' + str(jsonObj['upperLimitPrice']) + '\", \"tradePrice\": \"' + str(jsonObj['tradePrice']) + '\", \"@timestamp\": \"' + str(timestamp) + '\", \"datetime\": \"' + str(insertdatetime) + '\"}'
 
         requests.post(serverIP+"/"+stockIndex+"/1", headers=esHeaders, data=data.encode('utf-8'))
-
-    print(f"{time.time() - start:.4f} sec")
 
 def work_schedule(codes) :
     timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'

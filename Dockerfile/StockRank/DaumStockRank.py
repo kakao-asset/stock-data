@@ -12,11 +12,13 @@ stockIndex = os.environ['INDEX']
 
 es = Elasticsearch(serverIP)
 
-ua = UserAgent(verify_ssl=False)
+user_agent = UserAgent(verify_ssl=False)
 
 headers = {
-    'User-agent': ua.ie,
-    'referer': 'https://finance.daum.net'
+    'Referer': 'http://finance.daum.net',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127',
+    'Connection': 'close',
+    'User-Agent': user_agent.random
 }
 
 url = "https://finance.daum.net/api/search/ranks?limit=10"
@@ -29,6 +31,7 @@ make_index(es, stockIndex)
 
 
 def work_schedule() :
+    print("work start!!!")
     response = req.urlopen(req.Request(url, headers=headers)).read().decode('UTF-8')
     rank_json = json.loads(response)['data']
 
@@ -36,6 +39,7 @@ def work_schedule() :
         es.indices.delete(index=stockIndex)
     for elm in rank_json:
         es.index(index=stockIndex, body={'rank': elm['rank'], 'name': elm['name'], 'symbolCode': elm['symbolCode']})
+    print("work end!!!")
 
 def exit():
     print("StockRank exit process")

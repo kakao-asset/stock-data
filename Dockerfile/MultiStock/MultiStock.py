@@ -4,7 +4,7 @@ from multiprocessing import Pool
 import requests, time, json, schedule, os, sys
 from fake_useragent import UserAgent
 
-user_agent = UserAgent()
+user_agent = UserAgent(verify_ssl=False)
 esHeaders = {"Content-Type": "application/json; charset=UTF-8"}
 
 serverIP = os.environ['SERVER_IP']
@@ -40,7 +40,7 @@ def work(codes, timestamp, insertdatetime) :
 
     start = time.time()
     for code in codes:
-        response = requests.get(url_origin+code, headers=headers, verify=False)
+        response = requests.get(url_origin+code, headers=headers)
         try:
             jsonObj = json.loads(response.text)
         except JSONDecodeError:

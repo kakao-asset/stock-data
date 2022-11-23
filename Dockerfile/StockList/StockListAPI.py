@@ -1,12 +1,16 @@
 import requests, json, os
+from fake_useragent import UserAgent
 
 serverIP = os.environ['SERVER_IP']
 stockIndex = os.environ['INDEX']
 
+user_agent = UserAgent(verify_ssl=False)
+
 headers = {
             'Referer': 'http://finance.daum.net',
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127',
-            'Connection': 'close'
+            'Connection': 'close',
+            'User-Agent': user_agent.random
 }
 
 def make_index():
@@ -17,7 +21,7 @@ def loadCode():
     # 코스피
     KOSPI = "https://finance.daum.net/api/quotes/stocks?market=KOSPI"
 
-    req = requests.get(KOSPI, headers=headers, verify=False)
+    req = requests.get(KOSPI, headers=headers)
     stock_data = json.loads(req.text)
 
     esHeaders = {"Content-Type": "application/json; charset=UTF-8"}

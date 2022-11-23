@@ -17,7 +17,7 @@ def loadCode():
     # 코스피
     KOSPI = "https://finance.daum.net/api/quotes/stocks?market=KOSPI"
 
-    req = requests.get(KOSPI, headers=headers)
+    req = requests.get(KOSPI, headers=headers, verify=False)
     stock_data = json.loads(req.text)
 
     esHeaders = {"Content-Type": "application/json; charset=UTF-8"}

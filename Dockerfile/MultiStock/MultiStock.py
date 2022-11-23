@@ -40,7 +40,7 @@ def work(codes, timestamp, insertdatetime) :
 
     start = time.time()
     for code in codes:
-        response = requests.get(url_origin+code, headers=headers)
+        response = requests.get(url_origin+code, headers=headers, verify=False)
         try:
             jsonObj = json.loads(response.text)
         except JSONDecodeError:

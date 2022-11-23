@@ -1,5 +1,5 @@
 import urllib.request as req
-import json, time, os, schedule, requests
+import json, os, requests
 from fake_useragent import UserAgent
 
 serverIP = os.environ['SERVER_IP']
@@ -20,7 +20,6 @@ def make_index():
     requests.put(serverIP+"/"+ stockIndex)
 
 def work_schedule() :
-    print("work start!!!")
     response = req.urlopen(req.Request(url, headers=headers)).read().decode('UTF-8')
     rank_json = json.loads(response)['data']
 
@@ -29,10 +28,7 @@ def work_schedule() :
         requests.post(serverIP+"/"+stockIndex+"/1", headers=esHeaders, data=data.encode('utf-8'))
         
 if __name__ == "__main__":
+    print("Stock Rank Start!!!")
     make_index()
     work_schedule()
-    schedule.every(1).hours.do(work_schedule)
-    schedule.every().day.at("11:24").do(exit)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    print("Stock Rank End!!!")

@@ -1,14 +1,14 @@
 import requests, json, os
 from fake_useragent import UserAgent
 
-serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['INDEX']
+serverIP = "http://192.168.108.48:9200"
+stockIndex = "async-test"
+
 
 user_agent = UserAgent(verify_ssl=False)
 
 headers = {
             'Referer': 'http://finance.daum.net',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127',
             'Connection': 'close',
             'User-Agent': user_agent.random
 }
@@ -31,7 +31,7 @@ def loadCode():
         requests.post(serverIP+"/"+stockIndex+"/1",headers=esHeaders, data=data.encode('utf-8'))
 
 if __name__ == "__main__":
-    print("Stock List start!!!")
+    print("Stock List Start!!!")
     make_index()
     loadCode()
-    print("Stock List end!!!")
+    print("Stock List End!!!")

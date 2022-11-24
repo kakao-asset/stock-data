@@ -1,26 +1,40 @@
+import asyncio
 from datetime import datetime
 from json import JSONDecodeError
-from multiprocessing import Pool
-import requests, time, json, schedule, os, sys
+import random
+import aiohttp
+import requests, json, os
 from fake_useragent import UserAgent
+import time
 
 user_agent = UserAgent(verify_ssl=False)
-esHeaders = {"Content-Type": "application/json; charset=UTF-8"}
+esHeaders = {
+    "Content-Type": "application/json; charset=UTF-8",
+    'User-Agent': user_agent.random
+}
 
-serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['INDEX']
+# serverIP = os.environ['SERVER_IP']
+# stockIndex = os.environ['INDEX']
+serverIP = "http://192.168.56.101:9200"
+stockIndex = "async-test"
+
+elasticsearchIP = serverIP + "/" + stockIndex + "/1"
 
 headers = {
             'Referer': 'http://finance.daum.net',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127',
-            'Connection': 'close'
+            'Connection': 'close',
+            'User-Agent': user_agent.random
 }
+
+
+json_data = []
 
 def make_index():
     requests.delete(serverIP+"/"+ stockIndex)
     requests.put(serverIP+"/"+ stockIndex)
 
 def loadCode() :
+    print("\tStart get stock code!!!")
     codes = set()
     # 코스피
     KOSPI = "https://finance.daum.net/api/quotes/stocks?market=KOSPI"
@@ -30,59 +44,66 @@ def loadCode() :
     for i in stock_data['data']:
         codes.add(i['symbolCode'])
 
+    print("\tEnd get stock code!!!")
     return list(codes)
 
-def work(codes, timestamp, insertdatetime) :
-    url_origin = "https://finance.daum.net/api/quotes/"
+async def work(code, timestamp, insertdatetime) :
 
-    start = time.time()
-    for code in codes:
-        response = requests.get(url_origin+code, headers=headers)
-        try:
-            jsonObj = json.loads(response.text)
-        except JSONDecodeError:
-            print("Json Decode Error")
+    url_origin = "https://finance.daum.net/api/quotes/"+code
 
-        if jsonObj['sectorCode'] is None:
-            sectorCode = 'None'
-        else:
-            sectorCode = jsonObj['sectorCode']
+    async with aiohttp.ClientSession() as sess:
+        await asyncio.sleep(random.uniform(1, 10))
+        async with sess.get(url_origin, headers= headers) as res:
+            response = await res.text()
 
-        if jsonObj['sectorName'] is None:
-            sectorName = 'None'
-        else:
-            sectorName = jsonObj['sectorName']
+            try:
+                jsonObj = json.loads(response)
+            except JSONDecodeError:
+                print("Json Decode Error")
 
-        data = '{\"accTradePrice\": \"' + str(jsonObj['accTradePrice']) + '\", \"sectorName\": \"' + sectorName + '\", \"sectorCode\": \"' + sectorCode + '\", \"symbolCode\": \"' + str(jsonObj['symbolCode']) + '\", \"accTradeVolume\": \"' + str(jsonObj['accTradeVolume']) + '\", \"bps\": \"' + str(jsonObj['bps']) + '\", \"change\": \"' + jsonObj['change'] + '\", \"dps\": \"' + str(jsonObj['dps']) + '\", \"eps\": \"' + str(jsonObj['eps']) + '\", \"foreignRatio\": \"' + str(jsonObj['foreignRatio']) + '\", \"high52wPrice\": \"' + str(jsonObj['high52wPrice']) + '\", \"highPrice\": \"' + str(jsonObj['highPrice']) + '\", \"low52wPrice+\": \"' + str(jsonObj['low52wPrice']) + '\", \"lowPrice+\": \"' + str(jsonObj['lowPrice']) + '\", \"lowerLimitPrice+\": \"' + str(jsonObj['lowerLimitPrice']) + '\", \"marketCap+\": \"' + str(jsonObj['marketCap']) + '\", \"name+\": \"' + str(jsonObj['name']) + '\", \"openingPrice+\": \"' + str(jsonObj['openingPrice']) + '\", \"pbr\": \"' + str(jsonObj['pbr']) + '\", \"per\": \"' + str(jsonObj['per']) + '\", \"prevClosingPrice\": \"' + str(jsonObj['prevClosingPrice']) + '\", \"upperLimitPrice\": \"' + str(jsonObj['upperLimitPrice']) + '\", \"tradePrice\": \"' + str(jsonObj['tradePrice']) + '\", \"@timestamp\": \"' + str(timestamp) + '\", \"datetime\": \"' + str(insertdatetime) + '\"}'
+            if jsonObj['sectorCode'] is None:
+                sectorCode = 'None'
+            else:
+                sectorCode = jsonObj['sectorCode']
 
-        requests.post(serverIP+"/"+stockIndex+"/1", headers=esHeaders, data=data.encode('utf-8'))
+            if jsonObj['sectorName'] is None:
+                sectorName = 'None'
+            else:
+                sectorName = jsonObj['sectorName']
 
-def work_schedule(codes) :
+            data = '{\"accTradePrice\": \"' + str(jsonObj['accTradePrice']) + '\", \"sectorName\": \"' + sectorName + '\", \"sectorCode\": \"' + sectorCode + '\", \"symbolCode\": \"' + str(jsonObj['symbolCode']) + '\", \"accTradeVolume\": \"' + str(jsonObj['accTradeVolume']) + '\", \"bps\": \"' + str(jsonObj['bps']) + '\", \"change\": \"' + jsonObj['change'] + '\", \"dps\": \"' + str(jsonObj['dps']) + '\", \"eps\": \"' + str(jsonObj['eps']) + '\", \"foreignRatio\": \"' + str(jsonObj['foreignRatio']) + '\", \"high52wPrice\": \"' + str(jsonObj['high52wPrice']) + '\", \"highPrice\": \"' + str(jsonObj['highPrice']) + '\", \"low52wPrice+\": \"' + str(jsonObj['low52wPrice']) + '\", \"lowPrice+\": \"' + str(jsonObj['lowPrice']) + '\", \"lowerLimitPrice+\": \"' + str(jsonObj['lowerLimitPrice']) + '\", \"marketCap+\": \"' + str(jsonObj['marketCap']) + '\", \"name+\": \"' + str(jsonObj['name']) + '\", \"openingPrice+\": \"' + str(jsonObj['openingPrice']) + '\", \"pbr\": \"' + str(jsonObj['pbr']) + '\", \"per\": \"' + str(jsonObj['per']) + '\", \"prevClosingPrice\": \"' + str(jsonObj['prevClosingPrice']) + '\", \"upperLimitPrice\": \"' + str(jsonObj['upperLimitPrice']) + '\", \"tradePrice\": \"' + str(jsonObj['tradePrice']) + '\", \"@timestamp\": \"' + str(timestamp) + '\", \"datetime\": \"' + str(insertdatetime) + '\"}'
+            json_data.append(json.loads(data))
+
+    # requests.post(serverIP+"/"+stockIndex+"/1", headers=esHeaders, data=data.encode('utf-8'))
+
+async def work_schedule(codes) :
     timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
     insertdatetime = datetime.now().strftime('%Y-%m-%d %H:%M')
-    for i in range(count):
-        p.apply_async(work, (codes[(len(codes) // count) * i:(len(codes) // count) * (i + 1)],timestamp, insertdatetime))
 
-def exit():
-    print("MultiStock exit process")
-    print("Multi Stock end!!!")
-    sys.exit()
+    futures = [asyncio.ensure_future(work(code, timestamp, insertdatetime)) for code in codes]
 
-if __name__ == "__main__":
-    print("Multi Stock start!!!")
-    make_index()
-    codes = loadCode()
-    count = 24
-    p = Pool(count)
+    await asyncio.gather(*futures)
 
-    time.sleep(3)
 
-    work_schedule(codes)
+async def elasticsearch_post(data):
+    async with aiohttp.ClientSession() as session:  # requests의 Session 클래스 같은 역할입니다.
+        await asyncio.sleep(random.uniform(1, 10))
+        async with session.post(elasticsearchIP, headers=esHeaders, json=data) as resp:
+            response = await resp.text()
 
-    schedule.every(1).minutes.do(work_schedule, codes)
-    schedule.every().day.at("11:24").do(exit)
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-    p.close()
-    p.join()
+# if __name__ == "__main__":
+begin = time.time()
+
+loop = asyncio.get_event_loop()
+print("Multi Stock Start!!!")
+make_index()
+codes = loadCode()
+loop.run_until_complete(work_schedule(codes))
+print("\ttotal stock count : ",len(json_data))
+loop.close()
+print("End make json_data and Start elasticsearch work")
+
+task = [elasticsearch_post(x) for x in json_data]
+asyncio.run(asyncio.wait(task))
+end = time.time()
+print("Multi Stock End!!! time : " + str(end-begin))

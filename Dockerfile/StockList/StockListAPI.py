@@ -1,9 +1,8 @@
 import requests, json, os
 from fake_useragent import UserAgent
 
-serverIP = "http://192.168.108.48:9200"
-stockIndex = "async-test"
-
+serverIP = os.environ['SERVER_IP']
+stockIndex = os.environ['INDEX']
 
 user_agent = UserAgent(verify_ssl=False)
 

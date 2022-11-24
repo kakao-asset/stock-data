@@ -13,10 +13,8 @@ esHeaders = {
     'User-Agent': user_agent.random
 }
 
-# serverIP = os.environ['SERVER_IP']
-# stockIndex = os.environ['INDEX']
-serverIP = "http://192.168.56.101:9200"
-stockIndex = "async-test"
+serverIP = os.environ['SERVER_IP']
+stockIndex = os.environ['INDEX']
 
 elasticsearchIP = serverIP + "/" + stockIndex + "/1"
 

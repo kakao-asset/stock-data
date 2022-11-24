@@ -1,13 +1,12 @@
 import asyncio
 from datetime import datetime
 from json import JSONDecodeError
-import random
 import aiohttp
 import requests, json, os
 from fake_useragent import UserAgent
 import time
 
-user_agent = UserAgent(verify_ssl=False)
+user_agent = UserAgent(verify_ssl=False, use_cache_server=False)
 esHeaders = {
     "Content-Type": "application/json; charset=UTF-8",
     'User-Agent': user_agent.random
@@ -48,12 +47,10 @@ def loadCode() :
 async def work(code, timestamp, insertdatetime) :
 
     url_origin = "https://finance.daum.net/api/quotes/"+code
-
-    async with aiohttp.ClientSession() as sess:
-        await asyncio.sleep(random.uniform(1, 10))
-        async with sess.get(url_origin, headers= headers) as res:
+    connector = aiohttp.TCPConnector(limit=60)
+    async with aiohttp.ClientSession(connector=connector) as sess:
+        async with sess.get(url_origin, headers= headers, ssl=False) as res:
             response = await res.text()
-
             try:
                 jsonObj = json.loads(response)
             except JSONDecodeError:
@@ -84,24 +81,26 @@ async def work_schedule(codes) :
 
 
 async def elasticsearch_post(data):
-    async with aiohttp.ClientSession() as session:  # requests의 Session 클래스 같은 역할입니다.
-        await asyncio.sleep(random.uniform(1, 10))
+    connector = aiohttp.TCPConnector(limit=60)
+    async with aiohttp.ClientSession(connector=connector) as session:  # requests의 Session 클래스 같은 역할입니다.
         async with session.post(elasticsearchIP, headers=esHeaders, json=data) as resp:
             response = await resp.text()
 
-# if __name__ == "__main__":
-begin = time.time()
+if __name__ == "__main__":
+    begin = time.time()
 
-loop = asyncio.get_event_loop()
-print("Multi Stock Start!!!")
-make_index()
-codes = loadCode()
-loop.run_until_complete(work_schedule(codes))
-print("\ttotal stock count : ",len(json_data))
-loop.close()
-print("End make json_data and Start elasticsearch work")
+    # loop = asyncio.get_event_loop()
+    loop = asyncio.ProactorEventLoop()
+    asyncio.set_event_loop(loop)
+    print("Multi Stock Start!!!")
+    make_index()
+    codes = loadCode()
+    loop.run_until_complete(work_schedule(codes))
+    print("\ttotal stock count : ",len(json_data))
+    loop.close()
+    print("End make json_data and Start elasticsearch work")
 
-task = [elasticsearch_post(x) for x in json_data]
-asyncio.run(asyncio.wait(task))
-end = time.time()
-print("Multi Stock End!!! time : " + str(end-begin))
+    task = [elasticsearch_post(x) for x in json_data]
+    asyncio.run(asyncio.wait(task))
+    end = time.time()
+    print("Multi Stock End!!! time : " + str(end-begin))

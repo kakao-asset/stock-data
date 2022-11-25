@@ -1,22 +1,19 @@
 import asyncio
-import random
-from datetime import datetime
+import datetime
 from json import JSONDecodeError
 import aiohttp
 import requests, json, os
 from fake_useragent import UserAgent
 import time
 
-user_agent = UserAgent(verify_ssl=False, use_cache_server=False)
+user_agent = UserAgent()
 esHeaders = {
     "Content-Type": "application/json; charset=UTF-8",
     'User-Agent': user_agent.random
 }
 
-# serverIP = os.environ['SERVER_IP']
-# stockIndex = os.environ['INDEX']
-serverIP = "http://192.168.56.101:9200"
-stockIndex = "zxcasd3004-test-multi-stock"
+serverIP = os.environ['SERVER_IP']
+stockIndex = os.environ['INDEX']
 
 elasticsearchIP = serverIP + "/" + stockIndex + "/1"
 
@@ -81,8 +78,8 @@ async def work(code, timestamp, insertdatetime) :
     # requests.post(serverIP+"/"+stockIndex+"/1", headers=esHeaders, data=data.encode('utf-8'))
 
 async def work_schedule(codes) :
-    timestamp = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
-    insertdatetime = datetime.now().strftime('%Y-%m-%d %H:%M')
+    timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+    insertdatetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 
     futures = [asyncio.ensure_future(work(code, timestamp, insertdatetime)) for code in codes]
 
@@ -90,13 +87,15 @@ async def work_schedule(codes) :
 
 
 async def elasticsearch_post(data):
-    connector = aiohttp.TCPConnector(limit=60, verify_ssl=False)
+    connector = aiohttp.TCPConnector(limit=60)
     # await asyncio.sleep(random.uniform(1, 10))
     async with aiohttp.ClientSession(connector=connector) as session:  # requests의 Session 클래스 같은 역할입니다.
         async with session.post(elasticsearchIP, headers=esHeaders, json=data) as resp:
             response = await resp.text()
 
 if __name__ == "__main__":
+    today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(today)
     begin = time.time()
 
     loop = asyncio.get_event_loop()

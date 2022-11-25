@@ -1,19 +1,12 @@
 import datetime
-import time
 
-import pymysql  # pymysql 임포트
 import pymysql.cursors
 import os
 
-# host = os.environ['MARIADB_IP']
-# user = os.environ['MARIADB_USER']
-# password = os.environ['MARIADB_PASSWORD']
-# db = os.environ['MARIADB_DATABASE']
-
-host = "192.168.56.101"
-user = "root"
-password = "root"
-db = "ka"
+host = os.environ['MARIADB_IP']
+user = os.environ['MARIADB_USER']
+password = os.environ['MARIADB_PASSWORD']
+db = os.environ['MARIADB_DATABASE']
 
 
 conn = pymysql.connect(host=host, user=user, password=password, db=db, charset='utf8')	# 접속정보
@@ -29,21 +22,21 @@ select_all_stock_sql = "SELECT * FROM ka.stock"
 cur.execute(select_all_stock_sql)
 conn.commit()
 values = []
-today =  datetime.datetime.now().strftime("%Y-%m-%d")
+today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-# for dummny
-d1today = (datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-d2today = (datetime.datetime.now()-datetime.timedelta(days=2)).strftime("%Y-%m-%d")
+# # for dummny
+# d1today = (datetime.datetime.now()-datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+# d2today = (datetime.datetime.now()-datetime.timedelta(days=2)).strftime("%Y-%m-%d")
 
 for i in cur.fetchall():
     values.append(
         (str(i['avg_price']), str(i['quantity']), i['stock_code'], i['stock_name'], str(i['member_id']), str(today)))
 
-    # for dummy
-    values.append(
-        (str(i['avg_price']*10), str(i['quantity']+10), i['stock_code'], i['stock_name'], str(i['member_id']), str(d1today)))
-    values.append(
-        (str(i['avg_price']*100), str(i['quantity']+20), i['stock_code'], i['stock_name'], str(i['member_id']), str(d2today)))
+    # # for dummy
+    # values.append(
+    #     (str(i['avg_price']*10), str(i['quantity']+10), i['stock_code'], i['stock_name'], str(i['member_id']), str(d1today)))
+    # values.append(
+    #     (str(i['avg_price']*100), str(i['quantity']+20), i['stock_code'], i['stock_name'], str(i['member_id']), str(d2today)))
 
 for i in values:
     print(i)

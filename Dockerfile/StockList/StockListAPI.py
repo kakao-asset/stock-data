@@ -1,9 +1,9 @@
+import datetime
 import requests, json, os
 from fake_useragent import UserAgent
 
 serverIP = os.environ['SERVER_IP']
 stockIndex = os.environ['INDEX']
-
 user_agent = UserAgent(verify_ssl=False)
 
 headers = {
@@ -30,6 +30,8 @@ def loadCode():
         requests.post(serverIP+"/"+stockIndex+"/1",headers=esHeaders, data=data.encode('utf-8'))
 
 if __name__ == "__main__":
+    today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(today)
     print("Stock List Start!!!")
     make_index()
     loadCode()

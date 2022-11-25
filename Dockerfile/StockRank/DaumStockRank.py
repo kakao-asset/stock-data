@@ -1,3 +1,4 @@
+import datetime
 import urllib.request as req
 import json, os, requests
 from fake_useragent import UserAgent
@@ -28,6 +29,8 @@ def work_schedule() :
         requests.post(serverIP+"/"+stockIndex+"/1", headers=esHeaders, data=data.encode('utf-8'))
         
 if __name__ == "__main__":
+    today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(today)
     print("Stock Rank Start!!!")
     make_index()
     work_schedule()

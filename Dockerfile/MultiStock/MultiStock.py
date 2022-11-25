@@ -27,7 +27,6 @@ headers = {
 json_data = []
 
 def make_index():
-    requests.delete(serverIP+"/"+ stockIndex)
     requests.put(serverIP+"/"+ stockIndex)
 
 def loadCode() :

@@ -1,4 +1,5 @@
 import asyncio
+import random
 from datetime import datetime
 from json import JSONDecodeError
 import aiohttp
@@ -12,8 +13,10 @@ esHeaders = {
     'User-Agent': user_agent.random
 }
 
-serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['INDEX']
+# serverIP = os.environ['SERVER_IP']
+# stockIndex = os.environ['INDEX']
+serverIP = "http://192.168.56.101:9200"
+stockIndex = "zxcasd3004-test-multi-stock"
 
 elasticsearchIP = serverIP + "/" + stockIndex + "/1"
 
@@ -48,6 +51,12 @@ async def work(code, timestamp, insertdatetime) :
 
     url_origin = "https://finance.daum.net/api/quotes/"+code
     connector = aiohttp.TCPConnector(limit=60)
+    headers = {
+        'Referer': 'http://finance.daum.net',
+        'Connection': 'close',
+        'User-Agent': user_agent.random
+    }
+    # await asyncio.sleep(random.uniform(1, 10))
     async with aiohttp.ClientSession(connector=connector) as sess:
         async with sess.get(url_origin, headers= headers, ssl=False) as res:
             response = await res.text()
@@ -81,7 +90,8 @@ async def work_schedule(codes) :
 
 
 async def elasticsearch_post(data):
-    connector = aiohttp.TCPConnector(limit=60)
+    connector = aiohttp.TCPConnector(limit=60, verify_ssl=False)
+    # await asyncio.sleep(random.uniform(1, 10))
     async with aiohttp.ClientSession(connector=connector) as session:  # requests의 Session 클래스 같은 역할입니다.
         async with session.post(elasticsearchIP, headers=esHeaders, json=data) as resp:
             response = await resp.text()
@@ -89,9 +99,7 @@ async def elasticsearch_post(data):
 if __name__ == "__main__":
     begin = time.time()
 
-    # loop = asyncio.get_event_loop()
-    loop = asyncio.ProactorEventLoop()
-    asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
     print("Multi Stock Start!!!")
     make_index()
     codes = loadCode()
@@ -99,7 +107,8 @@ if __name__ == "__main__":
     print("\ttotal stock count : ",len(json_data))
     loop.close()
     print("End make json_data and Start elasticsearch work")
-
+    time.sleep(3)
+    asyncio.set_event_loop(asyncio.new_event_loop())
     task = [elasticsearch_post(x) for x in json_data]
     asyncio.run(asyncio.wait(task))
     end = time.time()

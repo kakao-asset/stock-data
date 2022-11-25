@@ -4,7 +4,7 @@ import json, os, requests
 from fake_useragent import UserAgent
 
 serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['INDEX']
+stockIndex = os.environ['STOCK_RANK_INDEX']
 
 ua = UserAgent(verify_ssl=False)
 esHeaders = {"Content-Type": "application/json; charset=UTF-8"}

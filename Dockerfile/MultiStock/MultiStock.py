@@ -13,7 +13,7 @@ esHeaders = {
 }
 
 serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['INDEX']
+stockIndex = os.environ['MULTI_STOCK_INDEX']
 
 elasticsearchIP = serverIP + "/" + stockIndex + "/1"
 

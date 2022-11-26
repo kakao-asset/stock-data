@@ -5,7 +5,7 @@ import os
 
 host = os.environ['MARIADB_IP']
 user = os.environ['MARIADB_USER']
-password = os.environ['MARIADB_PASSWORD']
+password = os.environ['MARIADB_ROOT_PASSWORD']
 db = os.environ['MARIADB_DATABASE']
 
 

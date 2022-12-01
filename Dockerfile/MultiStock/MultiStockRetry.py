@@ -7,6 +7,8 @@ from aiohttp_retry import ExponentialRetry, RetryClient, RequestParams
 from fake_useragent import UserAgent
 import time
 
+from requests import Session
+
 user_agent = UserAgent()
 esHeaders = {
     "Content-Type": "application/json; charset=UTF-8",
@@ -40,10 +42,14 @@ def loadCode() :
     # 코스피
     KOSPI = "https://finance.daum.net/api/quotes/stocks?market=KOSPI"
 
-    req = requests.get(KOSPI, headers=headers)
-    stock_data = json.loads(req.text)
-    for i in stock_data['data']:
-        codes.add(i['symbolCode'])
+    with Session() as session:
+        from requests.adapters import HTTPAdapter
+        adapter = HTTPAdapter(max_retries=3)
+        session.mount("http://", adapter)
+        result = session.get(url=KOSPI, headers=headers)
+        stock_data = json.loads(result.text)
+        for i in stock_data['data']:
+            codes.add(i['symbolCode'])
 
     print("\tEnd get stock code!!!")
     return list(codes)

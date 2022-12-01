@@ -2,14 +2,15 @@ FROM python:3.9.0-slim
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt 
-COPY MultiStock.py .
+COPY MultiStockRetry.py .
 ENV TZ Asia/Seoul
 
 # crontab
 RUN apt-get update && apt-get install -y \
     gcc \
     python3-dev \
-    cron
+    cron \
+    vim
 
 # Copy cron file to the cron.d directory on container
 COPY cron /etc/cron.d/cron

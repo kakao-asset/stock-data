@@ -1,0 +1,2 @@
+TZ=Asia/Seoul
+* 9-16 * * * /usr/local/bin/python /MultiStock.py >> /var/log/cron.log 2>&1

@@ -17,11 +17,8 @@ esHeaders = {
     'User-Agent': user_agent.random
 }
 
-# serverIP = os.environ['SERVER_IP']
-# stockIndex = os.environ['MULTI_STOCK_INDEX']
-serverIP = "http://52.78.120.51:9200"
-# serverIP = "http://localhost:9200"
-stockIndex = "retry"
+serverIP = os.environ['SERVER_IP']
+stockIndex = os.environ['MULTI_STOCK_INDEX']
 
 elasticsearchIP = serverIP + "/" + stockIndex + "/1"
 

@@ -2,7 +2,7 @@ FROM python:3.9.0-slim
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt 
-COPY MultiStockRetry.py .
+COPY MultiStockRetrySchedule.py .
 ENV TZ Asia/Seoul
 
 # crontab
@@ -21,4 +21,4 @@ RUN crontab /etc/cron.d/cron
 # Create the log file
 RUN touch /var/log/cron.log
 
-CMD ["cron", "-f"]
+CMD ["python", "MultiStockRetrySchedule.py"]

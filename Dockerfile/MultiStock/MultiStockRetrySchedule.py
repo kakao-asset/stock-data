@@ -87,7 +87,34 @@ async def work(code, timestamp, insertdatetime) :
                     else:
                         sectorName = jsonObj['sectorName']
 
-                    data = '{\"accTradePrice\": \"' + str(jsonObj['accTradePrice']) + '\", \"sectorName\": \"' + sectorName + '\", \"sectorCode\": \"' + sectorCode + '\", \"symbolCode\": \"' + str(jsonObj['symbolCode']) + '\", \"accTradeVolume\": \"' + str(jsonObj['accTradeVolume']) + '\", \"bps\": \"' + str(jsonObj['bps']) + '\", \"change\": \"' + jsonObj['change'] + '\", \"dps\": \"' + str(jsonObj['dps']) + '\", \"eps\": \"' + str(jsonObj['eps']) + '\", \"foreignRatio\": \"' + str(jsonObj['foreignRatio']) + '\", \"high52wPrice\": \"' + str(jsonObj['high52wPrice']) + '\", \"highPrice\": \"' + str(jsonObj['highPrice']) + '\", \"low52wPrice+\": \"' + str(jsonObj['low52wPrice']) + '\", \"lowPrice+\": \"' + str(jsonObj['lowPrice']) + '\", \"lowerLimitPrice+\": \"' + str(jsonObj['lowerLimitPrice']) + '\", \"marketCap+\": \"' + str(jsonObj['marketCap']) + '\", \"name+\": \"' + str(jsonObj['name']) + '\", \"openingPrice+\": \"' + str(jsonObj['openingPrice']) + '\", \"pbr\": \"' + str(jsonObj['pbr']) + '\", \"per\": \"' + str(jsonObj['per']) + '\", \"prevClosingPrice\": \"' + str(jsonObj['prevClosingPrice']) + '\", \"upperLimitPrice\": \"' + str(jsonObj['upperLimitPrice']) + '\", \"tradePrice\": \"' + str(jsonObj['tradePrice']) + '\", \"@timestamp\": \"' + str(timestamp) + '\", \"datetime\": \"' + str(insertdatetime) + '\"}'
+                    data = \
+                        '{\"accTradePrice\": \"' + str(jsonObj['accTradePrice']) + \
+                        '\", \"sectorName\": \"' + sectorName + \
+                        '\", \"sectorCode\": \"' + sectorCode + \
+                        '\", \"symbolCode\": \"' + str(jsonObj['symbolCode']) + \
+                        '\", \"accTradeVolume\": \"' + str(jsonObj['accTradeVolume']) + \
+                        '\", \"bps\": \"' + str(jsonObj['bps']) + \
+                        '\", \"change\": \"' + jsonObj['change'] + \
+                        '\", \"dps\": \"' + str(jsonObj['dps']) + \
+                        '\", \"eps\": \"' + str(jsonObj['eps']) + \
+                        '\", \"foreignRatio\": \"' + str(jsonObj['foreignRatio']) + \
+                        '\", \"high52wPrice\": \"' + str(jsonObj['high52wPrice']) + \
+                        '\", \"highPrice\": \"' + str(jsonObj['highPrice']) + \
+                        '\", \"low52wPrice\": \"' + str(jsonObj['low52wPrice']) + \
+                        '\", \"lowPrice\": \"' + str(jsonObj['lowPrice']) + \
+                        '\", \"lowerLimitPrice\": \"' + str(jsonObj['lowerLimitPrice']) + \
+                        '\", \"marketCap\": \"' + str(jsonObj['marketCap']) + \
+                        '\", \"name\": \"' + str(jsonObj['name']) + \
+                        '\", \"openingPrice\": \"' + str(jsonObj['openingPrice']) + \
+                        '\", \"pbr\": \"' + str(jsonObj['pbr']) + \
+                        '\", \"per\": \"' + str(jsonObj['per']) + \
+                        '\", \"prevClosingPrice\": \"' + str(jsonObj['prevClosingPrice']) + \
+                        '\", \"upperLimitPrice\": \"' + str(jsonObj['upperLimitPrice']) + \
+                        '\", \"tradePrice\": \"' + str(jsonObj['tradePrice']) + \
+                        '\", \"prevAccTradeVolumeChangeRate\": \"' + str(jsonObj['prevAccTradeVolumeChangeRate']) + \
+                        '\", \"@timestamp\": \"' + str(timestamp) + \
+                        '\", \"datetime\": \"' + str(insertdatetime) + \
+                        '\"}'
                     json_data.append(json.loads(data))
 
                     await retry_client.close()

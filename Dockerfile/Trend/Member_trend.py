@@ -17,7 +17,7 @@ def makeTrendTable():
 
 def insertTrend():
     # 메인 코드
-    select_all_stock_sql = "SELECT * FROM ka.stock"
+    select_all_stock_sql = "SELECT * FROM "+db+".stock"
     cur.execute(select_all_stock_sql)
     conn.commit()
     values = []
@@ -37,7 +37,7 @@ def insertTrend():
         # values.append(
         #     (str(i['avg_price']*100), str(i['quantity']+20), i['stock_code'], i['stock_name'], str(i['member_id']), str(d2today)))
 
-    insert_trend_sql = "INSERT INTO `ka`.`trend` (`avg_price`, `quantity`, `stock_code`, `stock_name`, `member_id`, `date`) VALUES (%s, %s, %s, %s, %s, %s)"
+    insert_trend_sql = "INSERT INTO `"+db+"`.`trend` (`avg_price`, `quantity`, `stock_code`, `stock_name`, `member_id`, `date`) VALUES (%s, %s, %s, %s, %s, %s)"
     cur.executemany(insert_trend_sql, values)
     conn.commit()
 

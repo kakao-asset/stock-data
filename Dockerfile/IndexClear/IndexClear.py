@@ -2,8 +2,8 @@ import datetime
 import requests, os
 
 serverIP = os.environ['SERVER_IP']
-mulitStockIndex = os.environ['MULTI_STOCK_INDEX']
-stockListIndex = os.environ['STOCK_LIST_INDEX']
+mulitStockIndex = os.environ['INDEX_MULTI-STOCK-INDEX']
+stockListIndex = os.environ['INDEX_STOCK-LIST-INDEX']
 
 headers = {
             'Referer': 'http://finance.daum.net',

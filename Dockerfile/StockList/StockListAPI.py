@@ -3,7 +3,7 @@ import requests, json, os
 from fake_useragent import UserAgent
 
 serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['STOCK_LIST_INDEX']
+stockIndex = os.environ['INDEX_STOCK-LIST-INDEX']
 user_agent = UserAgent(verify_ssl=False)
 
 headers = {

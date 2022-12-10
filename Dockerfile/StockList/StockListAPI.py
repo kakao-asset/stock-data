@@ -19,11 +19,13 @@ def loadCode():
     # 코스피
     KOSPI = "https://finance.daum.net/api/quotes/stocks?market=KOSPI"
 
+    # 데이터 요청
     req = requests.get(KOSPI, headers=headers)
     stock_data = json.loads(req.text)
 
     esHeaders = {"Content-Type": "application/json; charset=UTF-8"}
 
+    # 엘라스틱서치 저장
     for i in stock_data['data']:
         data = '{\"symbolCode\": \"'+ i["symbolCode"] + '\", \"name\": \"' + i["name"] + '\"}'
         requests.post(serverIP+"/"+stockIndex+"/1",headers=esHeaders, data=data.encode('utf-8'))

@@ -30,9 +30,11 @@ headers = { 'referer': 'http://finance.daum.net',
 
 json_data = []
 
+# 인덱스 생성
 def make_index():
     requests.put(serverIP+"/"+ stockIndex)
 
+# 코스피 종목 리스트 검색
 def loadCode() :
 
     print("Start get stock code!!!")
@@ -51,10 +53,12 @@ def loadCode() :
     print("End get stock code!!!")
     return list(codes)
 
+# 종목 상세 데이터 요청
 async def work(code, timestamp, insertdatetime) :
     url_origin = "https://finance.daum.net/api/quotes/"+code
     # await asyncio.sleep(random.uniform(1, 10))
 
+    # 예외 처리를 위한 retry와 timeout 설정
     retry_option = ExponentialRetry(attempts=3, max_timeout=2)
     connector = aiohttp.TCPConnector(limit=60)
     # await asyncio.sleep(random.uniform(1, 10))
@@ -73,6 +77,7 @@ async def work(code, timestamp, insertdatetime) :
                         print("Json Decode Error")
                         return schedule.CancelJob
 
+                    # 업종이 없는 종목 처리
                     if 'sectorCode' not in jsonObj.keys():
                         print("not respones")
                         return schedule.CancelJob
@@ -87,6 +92,7 @@ async def work(code, timestamp, insertdatetime) :
                     else:
                         sectorName = jsonObj['sectorName']
 
+                    # 응답 데이터 JSON 파싱
                     data = \
                         '{\"accTradePrice\": \"' + str(jsonObj['accTradePrice']) + \
                         '\", \"sectorName\": \"' + sectorName + \
@@ -124,6 +130,7 @@ async def work(code, timestamp, insertdatetime) :
 
     return 0
 
+# 타임 스탬프 추가 및 모든 종목 데이터 요청
 async def work_schedule(codes) :
     timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
     insertdatetime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -138,6 +145,7 @@ async def work_schedule(codes) :
     return 0
 
 
+# 수집된 데이터를 엘라스틱서치에 저장
 async def elasticsearch_post(data):
     connector = aiohttp.TCPConnector(limit=60)
     # await asyncio.sleep(random.uniform(1, 10))
@@ -145,6 +153,7 @@ async def elasticsearch_post(data):
         async with session.post(elasticsearchIP, headers=esHeaders, json=data) as resp:
             response = await resp.text()
 
+# 스케줄 실행 함수
 def main():
     global json_data
     today = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -153,6 +162,7 @@ def main():
     begin = time.time()
     asyncio.set_event_loop(asyncio.new_event_loop())
     loop = asyncio.get_event_loop()
+    # 데이터 요청
     res = loop.run_until_complete(work_schedule(codes))
     loop.close()
     if res == schedule.CancelJob:
@@ -166,6 +176,7 @@ def main():
     time.sleep(1)
     asyncio.set_event_loop(asyncio.new_event_loop())
     task = [elasticsearch_post(x) for x in json_data]
+    # 엘라스틱서치 저장
     asyncio.run(asyncio.wait(task))
     end = time.time()
     json_data=[]
@@ -182,12 +193,17 @@ if __name__ == "__main__":
         make_index()
         codes = loadCode()
 
+        # 9:00분부터 15:30분까지 스케줄 생성
         stockStartTime = "08:59"
         for i in range(392):
             tmp = (datetime.datetime.strptime(stockStartTime, '%H:%M') + datetime.timedelta(minutes=i)).strftime('%H:%M')
             # print(tmp)
             schedule.every().day.at(tmp).do(main)
+        
+        # 15:30분에 프로세스 종료
         schedule.every().day.at("15:31").do(endStockMarket)
+        
+        # 모든 스케줄이 끝날 때까지 대기
         while True:
             schedule.run_pending()
             time.sleep(1)

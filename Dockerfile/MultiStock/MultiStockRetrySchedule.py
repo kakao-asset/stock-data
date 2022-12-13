@@ -17,8 +17,8 @@ esHeaders = {
     'User-Agent': user_agent.random
 }
 
-serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['INDEX_MULTI-STOCK-INDEX']
+serverIP = "http://3.39.187.222:9200"
+stockIndex = "stock-data"
 
 elasticsearchIP = serverIP + "/" + stockIndex + "/1"
 

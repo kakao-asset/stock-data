@@ -2,8 +2,8 @@ import datetime
 import requests, json, os
 from fake_useragent import UserAgent
 
-serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['INDEX_STOCK-LIST-INDEX']
+serverIP = "http://3.39.187.222:9200"
+stockIndex = "stock-code-list"
 user_agent = UserAgent(verify_ssl=False)
 
 headers = {

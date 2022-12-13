@@ -3,8 +3,8 @@ import urllib.request as req
 import json, os, requests
 from fake_useragent import UserAgent
 
-serverIP = os.environ['SERVER_IP']
-stockIndex = os.environ['INDEX_STOCK-RANK-INDEX']
+serverIP = "http://3.39.187.222:9200"
+stockIndex = "stock-rank"
 
 ua = UserAgent(verify_ssl=False)
 esHeaders = {"Content-Type": "application/json; charset=UTF-8"}
